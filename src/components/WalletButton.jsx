@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
-import { FiWifi, FiWifiOff, FiCopy, FiExternalLink, FiLogOut } from 'react-icons/fi';
+import { FiWifi, FiCopy, FiExternalLink, FiLogOut } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 const WalletButton = () => {
@@ -36,11 +36,11 @@ const WalletButton = () => {
       <button
         onClick={connectWallet}
         disabled={connecting}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#06F8D0] to-[#7C3AED] text-utama font-semibold text-sm hover:shadow-lg hover:shadow-[#06F8D0]/20 transition-all duration-300 disabled:opacity-50"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 disabled:opacity-50"
       >
         {connecting ? (
           <>
-            <div className="w-4 h-4 border-2 border-utama border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             Connecting...
           </>
         ) : (
@@ -57,11 +57,11 @@ const WalletButton = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-[#06F8D0]/20 hover:bg-white/10 transition-all duration-200"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-yellow-500/20 hover:bg-white/10 transition-all duration-200"
       >
-        <span className="w-2 h-2 rounded-full bg-[#06F8D0] animate-pulse" />
+        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
         <span className="text-sm font-mono text-white">{shortenAddress(account)}</span>
-        <span className="text-xs text-[#06F8D0]">
+        <span className="text-xs text-yellow-400">
           {parseFloat(balance).toFixed(3)} ETH
         </span>
       </button>
@@ -69,12 +69,12 @@ const WalletButton = () => {
       {showDropdown && (
         <div className="absolute right-0 mt-2 w-64 rounded-xl border border-white/10 bg-kempat/95 backdrop-blur-xl shadow-2xl overflow-hidden z-50 animate-in">
           <div className="p-4 border-b border-white/5">
-            <p className="text-xs text-gray-400 mb-1">Connected as</p>
+            <p className="text-xs text-gray-400 mb-1">Connected Wallet</p>
             <p className="text-sm font-mono text-white">{account}</p>
             <p className="text-xs text-gray-500 mt-1">
               {parseFloat(balance).toFixed(4)} ETH
             </p>
-            <p className="text-xs text-[#06F8D0] mt-1">{chainName}</p>
+            <p className="text-xs text-yellow-400 mt-1">{chainName}</p>
           </div>
           <div className="p-2">
             <button
@@ -87,7 +87,7 @@ const WalletButton = () => {
               onClick={openExplorer}
               className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all"
             >
-              <FiExternalLink /> View on Explorer
+              <FiExternalLink /> View on Etherscan
             </button>
             <button
               onClick={() => { disconnectWallet(); setShowDropdown(false); }}

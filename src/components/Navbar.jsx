@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import { useWeb3 } from "../context/Web3Context";
-import { FiHexagon } from "react-icons/fi";
+import { FiBarChart2, FiHexagon } from "react-icons/fi";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,10 +22,10 @@ const Navbar = () => {
   useEffect(() => { closeMenu(); }, [location]);
 
   const navLinks = [
-    { path: "/", label: "Home", icon: null },
-    { path: "/classview", label: "Courses", icon: null },
-    { path: "/createsubs", label: "Pricing", icon: null },
-    { path: "/posting", label: "Community", icon: null },
+    { path: "/", label: "Home" },
+    { path: "/classview", label: "Courses" },
+    { path: "/createsubs", label: "Pricing" },
+    { path: "/posting", label: "Community" },
   ];
 
   return (
@@ -40,9 +40,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2 group">
-              <FiHexagon className="text-2xl text-[#06F8D0] group-hover:rotate-90 transition-transform duration-500" />
-              <span className="text-xl lg:text-2xl font-extrabold bg-gradient-to-r from-[#06F8D0] via-[#00E5FF] to-[#7C3AED] bg-clip-text text-transparent">
-                CryptoClass
+              <FiBarChart2 className="text-xl text-yellow-400 group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-xl lg:text-2xl font-extrabold gradient-text">
+                ForexClass
               </span>
             </Link>
 
@@ -65,8 +65,8 @@ const Navbar = () => {
 
           <div className="flex items-center gap-3">
             {isConnected && (
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#06F8D0]/5 border border-[#06F8D0]/10">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#06F8D0] animate-pulse" />
+              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/5 border border-yellow-500/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
                 <span className="text-xs text-gray-400">{chainName}</span>
               </div>
             )}
@@ -91,12 +91,13 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="lg:hidden border-t border-white/5 bg-utama/95 backdrop-blur-xl">
           <div className="px-4 py-4 space-y-1">
-            {isConnected && (
-              <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-400 border-b border-white/5 mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#06F8D0] animate-pulse" />
-                <span>{chainName}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 px-4 py-3 text-sm border-b border-white/5 mb-2">
+              <FiBarChart2 className="text-yellow-400" />
+              <span className="gradient-text font-bold">ForexClass</span>
+              {isConnected && (
+                <span className="ml-auto text-xs text-gray-500">{chainName}</span>
+              )}
+            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.path}

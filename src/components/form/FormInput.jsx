@@ -1,21 +1,26 @@
-import React from 'react';
+import React from "react";
+import { User, Mail, Lock, Key } from "lucide-react";
 
-const FormInput = ({ label, name, type, value, onChange, placeholder, disabled }) => {
+const iconMap = {
+  user: User,
+  email: Mail,
+  lock: Lock,
+  code: Key,
+};
+
+const FormInput = ({ icon, ...props }) => {
+  const Icon = icon ? iconMap[icon] : null;
+
   return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-400 mb-2">
-        {label}
-      </label>
+    <div className="relative">
+      {Icon && (
+        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-400/60" />
+      )}
       <input
-        type={type}
-        name={name}
-        id={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        required
-        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#06F8D0] focus:ring-1 focus:ring-[#06F8D0]/50 transition-all duration-200"
+        {...props}
+        className={`w-full bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 transition-all duration-200 focus:border-yellow-500/30 focus:bg-white/[0.07] hover:border-white/20 ${
+          Icon ? "pl-9 pr-3 py-2.5" : "px-3 py-2.5"
+        }`}
       />
     </div>
   );

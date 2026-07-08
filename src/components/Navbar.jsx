@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header from "../components/Header";
-import { FiBarChart2 } from "react-icons/fi";
+import { BarChart3, Hexagon } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,23 +26,25 @@ const Navbar = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-utama/80 backdrop-blur-md border-b border-white/5" : "bg-transparent"
+        scrolled ? "bg-utama/80 backdrop-blur-lg border-b border-white/5" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 lg:h-18">
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
-              <FiBarChart2 className="text-lg text-yellow-400" />
-              <span className="text-lg font-bold gradient-text">ForexClass</span>
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <BarChart3 className="w-4 h-4 text-yellow-400" />
+              </div>
+              <span className="text-base font-bold gradient-text">ForexClass</span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-0.5">
+            <nav className="hidden lg:flex items-center gap-1">
               {links.map((l) => (
                 <Link
                   key={l.path}
                   to={l.path}
-                  className={`px-3.5 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                  className={`px-3.5 py-2 text-sm rounded-lg transition-all duration-200 ${
                     location.pathname === l.path
                       ? "text-yellow-400 bg-yellow-500/10"
                       : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
@@ -73,13 +75,13 @@ const Navbar = () => {
       </div>
 
       {isMenuOpen && (
-        <div className="lg:hidden border-t border-white/5 bg-utama/95 backdrop-blur-md">
+        <div className="lg:hidden border-t border-white/5 bg-utama/95 backdrop-blur-lg">
           <div className="px-4 py-3 space-y-0.5">
             {links.map((l) => (
               <Link
                 key={l.path}
                 to={l.path}
-                className={`block px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
+                className={`block px-3.5 py-2.5 rounded-lg text-sm transition-all ${
                   location.pathname === l.path
                     ? "text-yellow-400 bg-yellow-500/10"
                     : "text-gray-400 hover:text-gray-200 hover:bg-white/5"

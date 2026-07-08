@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaUserCircle } from 'react-icons/fa';
+import { UserCircle } from 'lucide-react';
 
 const UserIcon = ({ onClick }) => {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const UserIcon = ({ onClick }) => {
       className="text-2xl text-gray-400 hover:text-tombol transition-colors duration-200"
       title="Profile"
     >
-      <FaUserCircle />
+      <UserCircle className="w-6 h-6" />
     </button>
   );
 };

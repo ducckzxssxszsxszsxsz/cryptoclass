@@ -6,14 +6,14 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: "Inter", sans-serif;
-  background-color: #0B1120;
+  background: #0B1120;
   color: #fff;
 }
 
 .glass-card {
-  background: rgba(26, 36, 61, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(26, 36, 61, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -25,11 +25,13 @@ body {
 }
 
 .card-hover {
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
 }
+
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
 }
 
 .animate-in {
@@ -42,8 +44,29 @@ body {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Elegant dot grid — Stripe-like */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(245, 158, 11, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dot-grid-light {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Subtle glow for hero */
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 ::-webkit-scrollbar { width: 6px; }
@@ -54,4 +77,9 @@ body {
 input:focus, textarea:focus, select:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fff;
 }

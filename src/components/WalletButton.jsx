@@ -1,100 +1,65 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
-import { FiWifi, FiCopy, FiExternalLink, FiLogOut } from 'react-icons/fi';
+import { FiCopy, FiExternalLink, FiLogOut } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 const WalletButton = () => {
   const { account, balance, chainName, connecting, isConnected, connectWallet, disconnectWallet, shortenAddress } = useWeb3();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
-
-  const copyAddress = () => {
-    if (account) {
-      navigator.clipboard.writeText(account);
-      toast.success('Address copied!');
-    }
-  };
-
-  const openExplorer = () => {
-    if (account) {
-      window.open(`https://etherscan.io/address/${account}`, '_blank');
-    }
-  };
 
   if (!isConnected) {
     return (
       <button
         onClick={connectWallet}
         disabled={connecting}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 disabled:opacity-50"
+        className="text-sm px-3.5 py-2 rounded-lg bg-yellow-500 text-utama font-medium hover:bg-yellow-400 transition-colors disabled:opacity-50"
       >
-        {connecting ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            Connecting...
-          </>
-        ) : (
-          <>
-            <FiWifi className="text-base" />
-            Connect Wallet
-          </>
-        )}
+        {connecting ? 'Connecting...' : 'Connect'}
       </button>
     );
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={ref}>
       <button
-        onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-yellow-500/20 hover:bg-white/10 transition-all duration-200"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
       >
-        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-        <span className="text-sm font-mono text-white">{shortenAddress(account)}</span>
-        <span className="text-xs text-yellow-400">
-          {parseFloat(balance).toFixed(3)} ETH
-        </span>
+        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+        <span className="text-white font-mono">{shortenAddress(account)}</span>
       </button>
 
-      {showDropdown && (
-        <div className="absolute right-0 mt-2 w-64 rounded-xl border border-white/10 bg-kempat/95 backdrop-blur-xl shadow-2xl overflow-hidden z-50 animate-in">
-          <div className="p-4 border-b border-white/5">
-            <p className="text-xs text-gray-400 mb-1">Connected Wallet</p>
-            <p className="text-sm font-mono text-white">{account}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {parseFloat(balance).toFixed(4)} ETH
-            </p>
-            <p className="text-xs text-yellow-400 mt-1">{chainName}</p>
+      {open && (
+        <div className="absolute right-0 mt-1.5 w-56 rounded-lg border border-white/10 bg-kempat shadow-lg z-50 animate-in">
+          <div className="p-3 border-b border-white/5">
+            <p className="text-xs text-gray-500 font-mono break-all">{account}</p>
+            <p className="text-xs text-gray-500 mt-1">{parseFloat(balance).toFixed(4)} ETH</p>
+            <p className="text-xs text-yellow-400 mt-0.5">{chainName}</p>
           </div>
-          <div className="p-2">
-            <button
-              onClick={copyAddress}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all"
-            >
-              <FiCopy /> Copy Address
-            </button>
-            <button
-              onClick={openExplorer}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all"
-            >
-              <FiExternalLink /> View on Etherscan
-            </button>
-            <button
-              onClick={() => { disconnectWallet(); setShowDropdown(false); }}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-all"
-            >
-              <FiLogOut /> Disconnect
-            </button>
+          <div className="p-1">
+            {[
+              { icon: FiCopy, label: 'Copy Address', action: () => { navigator.clipboard.writeText(account); toast.success('Copied!'); } },
+              { icon: FiExternalLink, label: 'Etherscan', action: () => window.open(`https://etherscan.io/address/${account}`, '_blank') },
+              { icon: FiLogOut, label: 'Disconnect', action: () => { disconnectWallet(); setOpen(false); }, red: true },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                className={`flex items-center gap-2.5 w-full px-3 py-2 rounded text-sm transition-colors ${
+                  item.red ? 'text-red-400 hover:bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <item.icon className="text-sm" />
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
       )}

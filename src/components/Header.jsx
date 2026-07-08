@@ -16,37 +16,21 @@ const Header = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-2">
       <WalletButton />
 
       {user ? (
         <>
-          <span className="hidden sm:block text-sm text-gray-400">
-            <span className="text-yellow-400 font-semibold">{user.name}</span>
-          </span>
-          <div className="w-px h-6 bg-white/10" />
+          <span className="hidden sm:block text-sm text-gray-400">{user.name}</span>
           <UserIcon />
-          <button
-            onClick={handleLogout}
-            className="text-sm px-3 py-2 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-200"
-          >
+          <button onClick={handleLogout} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
             Exit
           </button>
         </>
       ) : (
         <>
-          <Link
-            to="/login"
-            className="text-sm px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="text-sm px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-200"
-          >
-            Register
-          </Link>
+          <Link to="/login" className="text-sm text-gray-400 hover:text-gray-200 transition-colors">Login</Link>
+          <Link to="/register" className="text-sm px-3.5 py-2 rounded-lg bg-yellow-500 text-utama font-medium hover:bg-yellow-400 transition-colors">Register</Link>
         </>
       )}
     </div>

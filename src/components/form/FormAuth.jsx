@@ -31,70 +31,64 @@ const FormAuth = ({ isRegister, isOtp, onSubmit, isExpired }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-utama relative overflow-hidden">
-      <div className="absolute inset-0 hex-grid opacity-10" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#06F8D0]/5 rounded-full blur-3xl" />
-
-      <div className="relative w-full max-w-md mx-auto px-4 py-8 animate-in">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-3xl font-extrabold gradient-text">
-            <FiBarChart2 className="text-yellow-400" />
-            ForexClass
-          </Link>
-          <p className="text-gray-500 text-sm mt-2">XAU/USD Specialist • Web3 Powered</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-8 space-y-5">
-          <h3 className="text-2xl font-bold text-white text-center">
-            {isRegister ? "Create Account" : isOtp ? "Verify OTP" : "Welcome Back"}
-          </h3>
-
-          {isRegister && (
-            <>
-              <FormInput type="text" name="name" label="Nama" value={formData.name} onChange={handleChange} />
-              <FormInput type="text" name="username" label="Username" value={formData.username} onChange={handleChange} />
-            </>
-          )}
-
-          <FormInput type="email" name="email" label="Email" value={formData.email} onChange={handleChange} />
-
-          {!isOtp && (
-            <FormInput type="password" name="password" label="Password" value={formData.password} onChange={handleChange} />
-          )}
-
-          {isOtp && (
-            <>
-              <FormInput type="text" name="otp" label="Kode OTP" placeholder="Masukkan kode OTP" value={formData.otp} onChange={handleChange} />
-              <button type="button" onClick={handleResendOtp} className="text-sm text-yellow-400 hover:text-white transition-colors">
-                Kirim Ulang Kode OTP
-              </button>
-              {isExpired && <p className="text-sm text-red-400">Waktu OTP telah habis.</p>}
-            </>
-          )}
-
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold py-3 px-6 rounded-xl hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-300"
-          >
-            {isRegister ? "Register" : isOtp ? "Verifikasi OTP" : "Login"}
-          </button>
-
-          <div className="text-center">
-            {isOtp ? null : !isRegister ? (
-              <p className="text-gray-400 text-sm">
-                Belum punya akun?{" "}
-                <Link to="/register" className="text-yellow-400 font-semibold hover:text-white transition-colors">Register</Link>
-              </p>
-            ) : (
-              <p className="text-gray-400 text-sm">
-                Sudah punya akun?{" "}
-                <Link to="/login" className="text-yellow-400 font-semibold hover:text-white transition-colors">Login</Link>
-              </p>
-            )}
-          </div>
-        </form>
+    <div className="w-full animate-in">
+      <div className="text-center mb-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-lg font-bold gradient-text">
+          <FiBarChart2 className="text-yellow-400" />
+          ForexClass
+        </Link>
+        <p className="text-xs text-gray-500 mt-1">XAU/USD Specialist</p>
       </div>
+
+      <form onSubmit={handleSubmit} className="border border-white/10 rounded-xl p-6 space-y-4">
+        <h3 className="text-base font-semibold text-white text-center">
+          {isRegister ? "Create Account" : isOtp ? "Verify OTP" : "Welcome Back"}
+        </h3>
+
+        {isRegister && (
+          <>
+            <FormInput type="text" name="name" label="Nama" value={formData.name} onChange={handleChange} />
+            <FormInput type="text" name="username" label="Username" value={formData.username} onChange={handleChange} />
+          </>
+        )}
+
+        <FormInput type="email" name="email" label="Email" value={formData.email} onChange={handleChange} />
+
+        {!isOtp && (
+          <FormInput type="password" name="password" label="Password" value={formData.password} onChange={handleChange} />
+        )}
+
+        {isOtp && (
+          <>
+            <FormInput type="text" name="otp" label="Kode OTP" placeholder="Masukkan kode OTP" value={formData.otp} onChange={handleChange} />
+            <button type="button" onClick={handleResendOtp} className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors">
+              Kirim Ulang OTP
+            </button>
+            {isExpired && <p className="text-xs text-red-400">Waktu OTP telah habis.</p>}
+          </>
+        )}
+
+        <button
+          type="submit"
+          className="w-full bg-yellow-500 text-utama font-medium py-2.5 rounded-lg hover:bg-yellow-400 transition-colors text-sm"
+        >
+          {isRegister ? "Register" : isOtp ? "Verifikasi OTP" : "Login"}
+        </button>
+
+        <div className="text-center text-xs">
+          {isOtp ? null : !isRegister ? (
+            <p className="text-gray-500">
+              Belum punya akun?{" "}
+              <Link to="/register" className="text-yellow-400 hover:text-yellow-300 transition-colors">Register</Link>
+            </p>
+          ) : (
+            <p className="text-gray-500">
+              Sudah punya akun?{" "}
+              <Link to="/login" className="text-yellow-400 hover:text-yellow-300 transition-colors">Login</Link>
+            </p>
+          )}
+        </div>
+      </form>
     </div>
   );
 };

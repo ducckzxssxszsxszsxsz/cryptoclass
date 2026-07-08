@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import UserIcon from "./UserIcon";
+import WalletButton from "./WalletButton";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -14,40 +15,35 @@ const Header = () => {
     toast.success("Logout berhasil");
   };
 
-  const handleUserIconClick = () => {
-    if (user) {
-      navigate(user.role === "admin" ? "/admindashboard" : "/userdashboard");
-    } else {
-      navigate("/login");
-    }
-  };
-
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 sm:gap-3">
+      <WalletButton />
+
       {user ? (
         <>
           <span className="hidden sm:block text-sm text-gray-400">
-            Hello, <span className="text-tombol font-semibold">{user.name}</span>
+            <span className="text-[#06F8D0] font-semibold">{user.name}</span>
           </span>
-          <UserIcon onClick={handleUserIconClick} />
+          <div className="w-px h-6 bg-white/10" />
+          <UserIcon />
           <button
             onClick={handleLogout}
-            className="text-sm px-4 py-2 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-200"
+            className="text-sm px-3 py-2 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-200"
           >
-            Logout
+            Exit
           </button>
         </>
       ) : (
         <>
           <Link
             to="/login"
-            className="text-sm px-4 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+            className="text-sm px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
           >
             Login
           </Link>
           <Link
             to="/register"
-            className="text-sm px-4 py-2 rounded-xl bg-tombol text-utama font-semibold hover:shadow-lg hover:shadow-tombol/20 transition-all duration-200"
+            className="text-sm px-4 py-2 rounded-xl bg-gradient-to-r from-[#06F8D0] to-[#7C3AED] text-utama font-semibold hover:shadow-lg hover:shadow-[#06F8D0]/20 transition-all duration-200"
           >
             Register
           </Link>

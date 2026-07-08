@@ -15,7 +15,7 @@ const FormInput = ({ label, name, type, value, onChange, placeholder, disabled }
         placeholder={placeholder}
         disabled={disabled}
         required
-        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-tombol focus:ring-1 focus:ring-tombol/50 transition-all duration-200"
+        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#06F8D0] focus:ring-1 focus:ring-[#06F8D0]/50 transition-all duration-200"
       />
     </div>
   );

@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaUserCircle } from 'react-icons/fa';
 
-const UserIcon = () => {
+const UserIcon = ({ onClick }) => {
   const navigate = useNavigate();
-  const { user } = useAuth() || {}; // Tambahkan fallback agar tidak terjadi error
+  const { user } = useAuth() || {};
 
   const handleClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
     if (user) {
       switch (user.role) {
         case 'admin':
@@ -20,7 +24,7 @@ const UserIcon = () => {
           navigate('/user');
           break;
         default:
-          navigate('/home'); // Anda bisa menambahkan rute default atau halaman utama di sini
+          navigate('/');
           break;
       }
     } else {
@@ -29,13 +33,13 @@ const UserIcon = () => {
   };
 
   return (
-    <div
-      className="rounded-full flex items-center justify-center cursor-pointer text-xl hover:text-blue-500"
+    <button
       onClick={handleClick}
+      className="text-2xl text-gray-400 hover:text-tombol transition-colors duration-200"
       title="Profile"
     >
-      <FaUserCircle className="text-2xl" />
-    </div>
+      <FaUserCircle />
+    </button>
   );
 };
 

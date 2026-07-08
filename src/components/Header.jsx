@@ -1,11 +1,11 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext"; 
-import UserIcon from "./UserIcon"; 
+import { useAuth } from "../context/AuthContext";
+import UserIcon from "./UserIcon";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Header = () => {
-  const { user, logout } = useAuth(); 
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,46 +16,43 @@ const Header = () => {
 
   const handleUserIconClick = () => {
     if (user) {
-      navigate(user.role === 'admin' ? '/admindashboard' : '/userdashboard');
+      navigate(user.role === "admin" ? "/admindashboard" : "/userdashboard");
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
   return (
-    <div className="flex items-center justify-between py-5 px-5 text-white">
-      <div className="flex-1" />
-      <div className="flex items-center space-x-4">
-        {user ? (
-          <div className="flex items-center space-x-4">
-            <p className="text-ketiga text-xs sm:text-sm font-primary italic font-bold mr-2">
-              Hello, {user.name}
-            </p>
-            <UserIcon onClick={handleUserIconClick} />
-            <button
-              className="ml-4 text-xs bg-kempat px-2 py-1 rounded-md hover:bg-opacity-80 font-primary text-ketiga cursor-pointer"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div className="flex space-x-2">
-            <Link
-              to="/login"
-              className="text-xs bg-kempat px-2 py-1 rounded-md hover:bg-opacity-80 font-primary text-ketiga cursor-pointer"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="text-xs bg-kempat px-2 py-1 rounded-md hover:bg-opacity-80 font-primary text-ketiga cursor-pointer"
-            >
-              Register
-            </Link>
-          </div>
-        )}
-      </div>
+    <div className="flex items-center gap-3">
+      {user ? (
+        <>
+          <span className="hidden sm:block text-sm text-gray-400">
+            Hello, <span className="text-tombol font-semibold">{user.name}</span>
+          </span>
+          <UserIcon onClick={handleUserIconClick} />
+          <button
+            onClick={handleLogout}
+            className="text-sm px-4 py-2 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-200"
+          >
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <Link
+            to="/login"
+            className="text-sm px-4 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="text-sm px-4 py-2 rounded-xl bg-tombol text-utama font-semibold hover:shadow-lg hover:shadow-tombol/20 transition-all duration-200"
+          >
+            Register
+          </Link>
+        </>
+      )}
     </div>
   );
 };

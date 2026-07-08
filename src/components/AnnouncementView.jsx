@@ -3,7 +3,8 @@ import customAPI from "../api";
 
 const AnnouncementView = () => {
   const [announcements, setAnnouncements] = useState([]);
-  const [error, setError] = useState(null); // Menambahkan state untuk menangani error
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAnnouncements();
@@ -12,54 +13,82 @@ const AnnouncementView = () => {
   const fetchAnnouncements = async () => {
     try {
       const response = await customAPI.get("/post/caripost");
-      console.log("Fetched announcements:", response.data); // Log respons dari API
       setAnnouncements(response.data);
     } catch (error) {
-      console.error("Error fetching announcements:", error);
-      setError("Gagal mengambil pengumuman."); // Menyimpan pesan error
+      setError("Gagal mengambil pengumuman.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-utama pt-24 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-tombol border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 bg-utama">
-      <h2 className="text-2xl font-bold mb-4 text-white font-primary italic">
-        Community post
-      </h2>
-      {error && <p className="text-red-500">{error}</p>}{" "}
-      {/* Menampilkan pesan error jika ada */}
-      <ul>
-        {announcements.length > 0 ? (
-          announcements.map((ann, index) => (
-            <li
-              key={index}
-              className=" p-4 mb-2 rounded-lg shadow-lg glass hover:shadow-xl transition-shadow duration-300"
-            >
-              <h3 className="text-xl font-semibold text-white">{ann.title}</h3>
-              <p className="text-white mb-2">{ann.content}</p>
-              {ann.imageUrl && (
-                <img
-                  src={ann.imageUrl}
-                  alt={ann.title}
-                  className="mb-2 w-full h-auto"
-                />
-              )}
-              <p className="text-white">
-                Special for:{" "}
-                <span className="font-semibold">
-                  {Array.isArray(ann.rolesAllowed)
-                    ? ann.rolesAllowed.join(", ")
-                    : "N/A"}
-                </span>
-              </p>
-              <p className="text-sm text-gray-400">
-                Dibuat pada: {new Date(ann.createdAt).toLocaleDateString()}
-              </p>
-            </li>
-          ))
-        ) : (
-          <p className="text-gray-500">Tidak ada pengumuman yang tersedia.</p>
+    <div className="min-h-screen bg-utama pt-24 pb-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3 mb-8">
+          <h2 className="text-3xl font-bold text-white">Community</h2>
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-tombol/10 text-tombol">
+            Posts
+          </span>
+        </div>
+
+        {error && (
+          <div className="glass-card rounded-xl p-4 mb-6 border border-red-500/20">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
         )}
-      </ul>
+
+        <div className="space-y-6">
+          {announcements.length > 0 ? (
+            announcements.map((ann, index) => (
+              <div
+                key={index}
+                className="glass-card rounded-2xl p-6 card-hover animate-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2">{ann.title}</h3>
+                    <p className="text-gray-400 leading-relaxed mb-4">{ann.content}</p>
+                    {ann.imageUrl && (
+                      <img
+                        src={ann.imageUrl}
+                        alt={ann.title}
+                        className="rounded-xl w-full max-h-96 object-cover mb-4"
+                      />
+                    )}
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
+                      <span className="px-3 py-1 rounded-full bg-white/5 text-gray-400">
+                        {Array.isArray(ann.rolesAllowed)
+                          ? ann.rolesAllowed.join(", ")
+                          : "All"}
+                      </span>
+                      <span className="text-gray-500">
+                        {new Date(ann.createdAt).toLocaleDateString("id-ID", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-gray-500">Belum ada postingan.</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -14,13 +14,11 @@ const OTPView = () => {
   const { login } = useAuth();
 
   useEffect(() => {
-    // Set a timer for 2 minutes (120000 milliseconds)
     const timer = setTimeout(() => {
       setIsExpired(true);
       toast.error('Waktu untuk memasukkan kode OTP telah habis.');
     }, 120000);
-
-    return () => clearTimeout(timer); // Clear timer on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   const handleVerifyOtp = async (data) => {
@@ -33,13 +31,13 @@ const OTPView = () => {
       const response = await customAPI.post('/user/verify-otp', { email: data.email, otp: data.otp });
 
       if (response.status === 200) {
-        const userData = response.data.user; // Ambil data pengguna jika ada
-
-        // Simpan data pengguna dan token jika ada
-        dispatch(loginUser({ data: userData }));
-        login(userData);
+        const userData = response.data.user;
+        if (userData && userData.id) {
+          dispatch(loginUser({ data: userData }));
+          login(userData);
+        }
         toast.success('OTP berhasil diverifikasi');
-        navigate('/login'); // Pindahkan ke halaman login
+        navigate('/login');
       } else {
         toast.error('Data pengguna tidak valid.');
       }

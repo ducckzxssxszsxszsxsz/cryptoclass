@@ -1,156 +1,169 @@
-import React, { useState } from 'react';
-import { Form, Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import FormInput from '../form/FormInput';
-import customAPI from '../../api';
-import { toast } from 'react-toastify';
-import { loginUser } from '../../features/userSlice'; // Pastikan path sesuai
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import FormInput from "../form/FormInput";
 
-const FormAuth = ({ isRegister, isOtp }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+const FormAuth = ({ isRegister, isOtp, onSubmit, isExpired }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
-    password: '',
-    otp: ''
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    otp: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      if (isRegister) {
-        const response = await customAPI.post('/user/register', formData);
-        toast.success(response.data.message);
-        navigate('/otp'); // Navigasi ke halaman OTP setelah pendaftaran berhasil
-      } else if (isOtp) {
-        const response = await customAPI.post('/user/verify-otp', {
-          email: formData.email,
-          otp: formData.otp
-        });
-
-        if (response.status === 200) {
-          toast.success(response.data.message);
-          navigate('/login'); // Navigasi ke halaman login setelah verifikasi berhasil
-        }
-      } else {
-        // Login handling
-        const response = await customAPI.post('/user/login', {
-          email: formData.email,
-          password: formData.password,
-        });
-
-        console.log(response); // Log response untuk debugging
-        toast.success(response.data.message);
-
-        // Pastikan data user ada sebelum disimpan ke Redux
-        if (response.data.user) {
-          // Simpan data user ke Redux
-          dispatch(loginUser(response.data.user));
-
-          // Simpan data user ke Local Storage
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-
-          navigate('/'); // Navigasi ke halaman dashboard setelah login berhasil
-          window.location.reload(); // Refresh halaman
-        } else {
-          toast.error('Data pengguna tidak ditemukan.');
-        }
-      }
-    } catch (error) {
-      const errorMessage = error?.response?.data?.message || 'Terjadi kesalahan';
-      toast.error(errorMessage);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onSubmit) onSubmit(formData);
   };
 
   const handleResendOtp = async () => {
     try {
-      const response = await customAPI.post('/v1/user/resend-otp', { email: formData.email });
+      const customAPI = (await import("../../api")).default;
+      const response = await customAPI.post("/v1/user/resend-otp", {
+        email: formData.email,
+      });
+      const toast = (await import("react-toastify")).toast;
       toast.success(response.data.message);
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || 'Terjadi kesalahan saat mengirim ulang OTP';
+      const toast = (await import("react-toastify")).toast;
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Terjadi kesalahan saat mengirim ulang OTP";
       toast.error(errorMessage);
     }
   };
 
   return (
-    <div className="bg-kempat font-primary min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-screen-md px-4 py-8 mx-auto">
+    <div className="min-h-screen flex items-center justify-center bg-utama relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-tombol/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-md mx-auto px-4 py-8 animate-in">
         <div className="text-center mb-8">
-          <Form
-            method="POST"
-            className="flex flex-col p-6 mx-auto max-w-lg text-center font-bold text-black glass rounded-lg hover:shadow-md hover:opacity-80 transition duration-300 ease-in-out"
-            onSubmit={handleSubmit}
+          <Link
+            to="/"
+            className="text-3xl font-extrabold gradient-text inline-block"
           >
-            <h3 className="font-bold text-lg text-white mb-4">
-              {isRegister ? "Register" : isOtp ? "Verifikasi OTP" : "Login"}
-            </h3>
-            {isRegister && (
-              <>
-                <FormInput type="text" name="name" label="Nama" value={formData.name} onChange={handleChange} />
-                <FormInput type="text" name="username" label="Username" value={formData.username} onChange={handleChange} />
-              </>
-            )}
-            <FormInput type="email" name="email" label="Email" value={formData.email} onChange={handleChange} />
-            {!isOtp && (
-              <FormInput type="password" name="password" label="Password" value={formData.password} onChange={handleChange} />
-            )}
-            {isOtp && (
-              <>
-                <FormInput
-                  type="text"
-                  name="otp"
-                  label="Kode OTP"
-                  placeholder="Masukkan kode OTP"
-                  value={formData.otp}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  className="text-ketiga mt-2"
-                >
-                  Kirim Ulang Kode OTP
-                </button>
-              </>
-            )}
-            <button
-              type="submit"
-              className="bg-kempat text-ketiga rounded-md px-4 py-2 mt-4 hover:shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
-            >
-              {isRegister ? "Register" : isOtp ? "Verifikasi OTP" : "Login"}
-            </button>
-            <div className="mt-4">
-              {isOtp ? null : !isRegister ? (
-                <p className="text-white">
-                  belum punya akun? 
-                  <Link
-                    to="/register"
-                    className="font-semibold text-ketiga hover:shadow-lg hover:opacity-80 transition duration-300 ease-in-out cursor-pointer ml-2"
-                  >
-                    register
-                  </Link>
-                </p>
-              ) : (
-                <p className="text-white">
-                  sudah punya akun? 
-                  <Link
-                    to="/login"
-                    className="font-semibold text-ketiga hover:shadow-lg hover:opacity-80 transition duration-300 ease-in-out cursor-pointer ml-2"
-                  >
-                    Login
-                  </Link>
+            CryptoClass
+          </Link>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="glass-card rounded-2xl p-8 space-y-6"
+        >
+          <h3 className="text-2xl font-bold text-white text-center">
+            {isRegister
+              ? "Create Account"
+              : isOtp
+              ? "Verify OTP"
+              : "Welcome Back"}
+          </h3>
+
+          {isRegister && (
+            <>
+              <FormInput
+                type="text"
+                name="name"
+                label="Nama"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              <FormInput
+                type="text"
+                name="username"
+                label="Username"
+                value={formData.username}
+                onChange={handleChange}
+              />
+            </>
+          )}
+
+          <FormInput
+            type="email"
+            name="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+
+          {!isOtp && (
+            <FormInput
+              type="password"
+              name="password"
+              label="Password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          )}
+
+          {isOtp && (
+            <>
+              <FormInput
+                type="text"
+                name="otp"
+                label="Kode OTP"
+                placeholder="Masukkan kode OTP"
+                value={formData.otp}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="text-sm text-tombol hover:text-white transition-colors"
+              >
+                Kirim Ulang Kode OTP
+              </button>
+              {isExpired && (
+                <p className="text-sm text-red-400">
+                  Waktu untuk memasukkan kode OTP telah habis.
                 </p>
               )}
-            </div>
-          </Form>
-        </div>
+            </>
+          )}
+
+          <button
+            type="submit"
+            className="w-full bg-tombol text-utama font-bold py-3 px-6 rounded-xl hover:shadow-lg hover:shadow-tombol/20 transition-all duration-300"
+          >
+            {isRegister
+              ? "Register"
+              : isOtp
+              ? "Verifikasi OTP"
+              : "Login"}
+          </button>
+
+          <div className="text-center">
+            {isOtp ? null : !isRegister ? (
+              <p className="text-gray-400 text-sm">
+                Belum punya akun?{" "}
+                <Link
+                  to="/register"
+                  className="text-tombol font-semibold hover:text-white transition-colors"
+                >
+                  Register
+                </Link>
+              </p>
+            ) : (
+              <p className="text-gray-400 text-sm">
+                Sudah punya akun?{" "}
+                <Link
+                  to="/login"
+                  className="text-tombol font-semibold hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+              </p>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );

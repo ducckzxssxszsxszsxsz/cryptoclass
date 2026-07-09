@@ -4,6 +4,7 @@ import UserIcon from "./UserIcon";
 import WalletButton from "./WalletButton";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { t } from "../i18n";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -12,7 +13,7 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
-    toast.success("Logout berhasil");
+    toast.success(t("toast.logoutSuccess"));
   };
 
   return (
@@ -22,12 +23,12 @@ const Header = () => {
         <>
           <span className="hidden sm:block text-sm text-gray-400">{user.name}</span>
           <UserIcon />
-          <button onClick={handleLogout} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Exit</button>
+          <button onClick={handleLogout} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">{t("header.exit")}</button>
         </>
       ) : (
         <>
-          <Link to="/login" className="text-sm text-gray-400 hover:text-gray-200 transition-colors">Login</Link>
-          <Link to="/register" className="inline-flex items-center gap-1.5 text-sm px-3.5 py-2 rounded-xl bg-yellow-500 text-utama font-medium hover:bg-yellow-400 transition-all">Register</Link>
+          <Link to="/login" className="text-sm text-gray-400 hover:text-gray-200 transition-colors">{t("header.login")}</Link>
+          <Link to="/register" className="inline-flex items-center gap-1.5 text-sm px-3.5 py-2 rounded-xl btn-gradient text-white font-medium shadow-lg shadow-tombol/20 transition-all">{t("header.register")}</Link>
         </>
       )}
     </div>

@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormInput from "./FormInput";
 import customAPI from "../../api";
+import { t } from "../../i18n";
 
 const FormAuth = () => {
   const navigate = useNavigate();
@@ -26,25 +27,23 @@ const FormAuth = () => {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(data.data));
         navigate("/");
-        toast.success("Login berhasil");
+        toast.success(t("toast.loginSuccess"));
       } else if (isRegister) {
         setStep("otp");
-        toast.success("Kode OTP dikirim ke email");
+        toast.success(t("toast.otpSent"));
       }
     } catch (err) {
-      toast.error(err.response?.data?.meta?.message || "Terjadi kesalahan");
+      toast.error(err.response?.data?.meta?.message || t("toast.error"));
     }
     setLoading(false);
   };
 
   const handleResendOtp = async () => {
     try {
-      const { default: customAPI } = await import("../../api");
-      const { default: toast } = await import("react-toastify");
       await customAPI.post("/user/resend-otp", { email: form.email });
-      toast.success("OTP berhasil dikirim!");
+      toast.success(t("toast.otpResent"));
     } catch {
-      toast.error("Gagal mengirim OTP");
+      toast.error(t("toast.otpResendFailed"));
     }
   };
 
@@ -57,24 +56,24 @@ const FormAuth = () => {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(data.data));
         navigate("/");
-        toast.success("Registrasi berhasil");
+        toast.success(t("toast.registerSuccess"));
       }
     } catch (err) {
-      toast.error(err.response?.data?.meta?.message || "OTP salah");
+      toast.error(err.response?.data?.meta?.message || t("toast.otpError"));
     }
     setLoading(false);
   };
 
   const inputs = isRegister
     ? [
-        { name: "name", type: "text", placeholder: "Full Name", icon: "user" },
-        { name: "email", type: "email", placeholder: "Email", icon: "email" },
-        { name: "password", type: "password", placeholder: "Password", icon: "lock" },
-        { name: "refcode", type: "text", placeholder: "Referral Code (optional)", icon: "code" },
+        { name: "name", type: "text", placeholder: t("auth.fullName"), icon: "user" },
+        { name: "email", type: "email", placeholder: t("auth.email"), icon: "email" },
+        { name: "password", type: "password", placeholder: t("auth.password"), icon: "lock" },
+        { name: "refcode", type: "text", placeholder: t("auth.referralCode"), icon: "code" },
       ]
     : [
-        { name: "email", type: "email", placeholder: "Email", icon: "email" },
-        { name: "password", type: "password", placeholder: "Password", icon: "lock" },
+        { name: "email", type: "email", placeholder: t("auth.email"), icon: "email" },
+        { name: "password", type: "password", placeholder: t("auth.password"), icon: "lock" },
       ];
 
   return (
@@ -83,24 +82,24 @@ const FormAuth = () => {
         <form onSubmit={handleVerifyOtp} className="space-y-4 mt-4">
           <FormInput
             type="text"
-            placeholder="Kode OTP"
+            placeholder={t("auth.kodeOtp")}
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-utama font-semibold py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full btn-gradient text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-tombol/20 hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
           >
-            {loading ? "Verifying..." : "Verify OTP"}
+            {loading ? t("auth.connecting") : t("auth.verify")}
           </button>
           <div className="text-center">
             <button
               type="button"
               onClick={handleResendOtp}
-              className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors"
+              className="text-xs text-tombol hover:text-tombol/80 transition-colors"
             >
-              Resend OTP
+              {t("auth.resend")}
             </button>
           </div>
         </form>
@@ -120,18 +119,18 @@ const FormAuth = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-utama font-semibold py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full btn-gradient text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-tombol/20 hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
           >
-            {loading ? "Loading..." : isRegister ? "Register" : "Login"}
+            {loading ? t("auth.loading") : isRegister ? t("auth.register") : t("auth.login")}
           </button>
 
           <p className="text-xs text-gray-500 text-center mt-4">
-            {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}
+            {isRegister ? t("auth.alreadyAccount") : t("auth.noAccount")}{" "}
             <Link
               to={isRegister ? "/login" : "/register"}
-              className="text-yellow-400 hover:text-yellow-300 transition-colors"
+              className="text-tombol hover:text-tombol/80 transition-colors"
             >
-              {isRegister ? "Login" : "Register"}
+              {isRegister ? t("auth.loginLink") : t("auth.registerLink")}
             </Link>
           </p>
         </form>

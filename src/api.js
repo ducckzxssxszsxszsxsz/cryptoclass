@@ -1,23 +1,21 @@
 import axios from 'axios';
-import { toast } from 'react-toastify'; // Pastikan untuk mengimpor toast
+import { toast } from 'react-toastify';
+import { t } from './i18n';
 
-// Create an Axios instance with default settings
 const customAPI = axios.create({
   baseURL: 'http://localhost:3000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Allow sending cookies
+  withCredentials: true,
 });
 
-// Request Interceptor to add Authorization header
 customAPI.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
-    console.log('Request config:', config); // Log the request config for debugging
     return config;
   },
   (error) => {
@@ -26,19 +24,14 @@ customAPI.interceptors.request.use(
   }
 );
 
-// Response Interceptor to handle errors
 customAPI.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response } = error;
     if (response) {
       const { status, data } = response;
-      console.error('Response Interceptor Error Status:', status);
-      console.error('Response Error Data:', data);
 
       if (status === 401) {
-        console.warn('Unauthorized access - possibly expired token.');
-
         const originalRequest = error.config;
         if (!originalRequest._retry) {
           originalRequest._retry = true;
@@ -46,7 +39,6 @@ customAPI.interceptors.response.use(
 
           if (refreshToken) {
             try {
-              console.log('Attempting to refresh token...');
               const refreshResponse = await axios.post(
                 'http://localhost:3000/api/v1/auth/refresh',
                 { token: refreshToken },
@@ -54,26 +46,22 @@ customAPI.interceptors.response.use(
               );
 
               const { token: newToken } = refreshResponse.data;
-              console.log('New token received:', newToken);
               localStorage.setItem('token', newToken);
               customAPI.defaults.headers['Authorization'] = `Bearer ${newToken}`;
 
-              // Retry the failed request with the new token
               return customAPI(originalRequest);
             } catch (refreshError) {
               console.error('Token refresh failed:', refreshError);
               logoutUser();
             }
           } else {
-            console.warn('No refresh token available. Logging out.');
             logoutUser();
           }
         } else {
-          console.warn('Retry attempt already made. Logging out.');
           logoutUser();
         }
       } else if (status === 500) {
-        toast.error("Terjadi kesalahan di server. Silakan coba lagi nanti!");
+        toast.error(t('toast.serverError'));
       }
     } else {
       console.error('No response from server:', error.message);
@@ -83,30 +71,27 @@ customAPI.interceptors.response.use(
   }
 );
 
-// Function to handle user logout
 const logoutUser = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('refreshToken');
-  window.location.href = '/login'; // Redirect to login page
+  window.location.href = '/login';
 };
 
-// Function to delete a course
 export const deleteCourse = async (courseId) => {
   try {
     await customAPI.delete(`/course/courses/${courseId}`);
   } catch (error) {
     console.error('Failed to delete course:', error.response ? error.response.data : error.message);
-    throw new Error('Failed to delete course');
+    throw new Error(t('toast.deleteFailed'));
   }
 };
 
-// Function to update the status of a course
 export const updateCourseStatus = async (courseId, newStatus) => {
   try {
     await customAPI.patch(`/course/courses/${courseId}/status`, { status: newStatus });
   } catch (error) {
     console.error('Failed to update course status:', error.response ? error.response.data : error.message);
-    throw new Error('Failed to update course status');
+    throw new Error(t('toast.updateStatusFailed'));
   }
 };
 

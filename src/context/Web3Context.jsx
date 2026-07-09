@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { toast } from 'react-toastify';
+import { t } from '../i18n';
 
 const Web3Context = createContext();
 
@@ -12,6 +13,11 @@ export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [connecting, setConnecting] = useState(false);
+  const [hasMetaMask, setHasMetaMask] = useState(false);
+
+  useEffect(() => {
+    setHasMetaMask(!!(window.ethereum && window.ethereum.isMetaMask));
+  }, []);
 
   const getChainName = (id) => {
     const chains = {
@@ -40,15 +46,22 @@ export const Web3Provider = ({ children }) => {
 
   const connectWallet = useCallback(async () => {
     if (!window.ethereum) {
-      toast.error('Please install MetaMask to use Web3 features!');
+      toast.error('MetaMask tidak terdeteksi! Silakan install MetaMask.');
       window.open('https://metamask.io', '_blank');
       return;
+    }
+    if (!window.ethereum.isMetaMask) {
+      toast.warning('Wallet terdeteksi tapi bukan MetaMask. Beberapa fitur mungkin terbatas.');
     }
 
     setConnecting(true);
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const accounts = await provider.send('eth_requestAccounts', []);
+      if (!accounts || accounts.length === 0) {
+        toast.error('Tidak ada akun yang dipilih. Buka MetaMask dan pilih akun.');
+        return;
+      }
       const signer = provider.getSigner();
       const network = await provider.getNetwork();
       const chainId = network.chainId;
@@ -58,13 +71,20 @@ export const Web3Provider = ({ children }) => {
       setAccount(accounts[0]);
       setChainId(chainId);
       setChainName(getChainName(chainId));
+      setHasMetaMask(true);
 
       await updateBalance(provider, accounts[0]);
 
       toast.success(`Wallet connected: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`);
     } catch (err) {
       console.error('Error connecting wallet:', err);
-      toast.error(err.code === 4001 ? 'Connection rejected' : 'Failed to connect wallet');
+      if (err.code === 4001) {
+        toast.error('Koneksi ditolak oleh user.');
+      } else if (err.code === -32002) {
+        toast.error('Permintaan koneksi sedang diproses. Buka MetaMask.');
+      } else {
+        toast.error('Gagal connect wallet: ' + (err.message || 'Unknown error'));
+      }
     } finally {
       setConnecting(false);
     }
@@ -118,10 +138,11 @@ export const Web3Provider = ({ children }) => {
       } else {
         setAccount(accounts[0]);
         if (provider) updateBalance(provider, accounts[0]);
+        toast.info('Akun MetaMask berubah.');
       }
     };
 
-    const handleChainChanged = (chainId) => {
+    const handleChainChanged = () => {
       window.location.reload();
     };
 
@@ -140,6 +161,29 @@ export const Web3Provider = ({ children }) => {
     };
   }, [provider, updateBalance, disconnectWallet]);
 
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (!window.ethereum) return;
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner();
+          const network = await provider.getNetwork();
+          setProvider(provider);
+          setSigner(signer);
+          setAccount(accounts[0]);
+          setChainId(network.chainId);
+          setChainName(getChainName(network.chainId));
+          await updateBalance(provider, accounts[0]);
+        }
+      } catch (err) {
+        console.error('Error checking existing connection:', err);
+      }
+    };
+    checkConnection();
+  }, []);
+
   const shortenAddress = (addr) => {
     if (!addr) return '';
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -153,6 +197,7 @@ export const Web3Provider = ({ children }) => {
         chainId,
         chainName,
         connecting,
+        hasMetaMask,
         provider,
         signer,
         connectWallet,

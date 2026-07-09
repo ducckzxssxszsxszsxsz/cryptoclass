@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, logoutUser as reduxLogoutUser } from '../features/userSlice';
 import { toast } from 'react-toastify';
+import { t } from '../i18n';
 
-// Membuat konteks autentikasi
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -15,21 +15,21 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData) => {
         if (!userData || !userData.id) {
-            toast.error('Data pengguna tidak valid.');
+            toast.error(t('toast.invalidData'));
             return;
         }
 
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-        dispatch(loginUser({ data: userData })); // Update Redux store
-        toast.success('Login berhasil');
+        dispatch(loginUser({ data: userData }));
+        toast.success(t('toast.loginSuccess'));
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('user');
         dispatch(reduxLogoutUser());
-        toast.success('Logout berhasil');
+        toast.success(t('toast.logoutSuccess'));
     };
 
     return (
@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// Hook untuk menggunakan AuthContext
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

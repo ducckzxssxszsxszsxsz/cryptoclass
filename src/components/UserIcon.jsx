@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { UserCircle } from 'lucide-react';
+import { t } from '../i18n';
 
 const UserIcon = ({ onClick }) => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const UserIcon = ({ onClick }) => {
     <button
       onClick={handleClick}
       className="text-2xl text-gray-400 hover:text-tombol transition-colors duration-200"
-      title="Profile"
+      title={t("userIcon.profile")}
     >
       <UserCircle className="w-6 h-6" />
     </button>

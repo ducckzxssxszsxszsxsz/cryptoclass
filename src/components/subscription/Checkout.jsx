@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useWeb3 } from "../../context/Web3Context";
 import customAPI from "../../api";
-import { Loader2, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { toast } from "react-toastify";
+import { t } from "../../i18n";
 
 const Checkout = ({ courseId, price, selectedCrypto }) => {
   const { account, signer, isConnected, connectWallet } = useWeb3();
@@ -23,7 +24,7 @@ const Checkout = ({ courseId, price, selectedCrypto }) => {
     setLoading(true);
     try {
       const priceWei = getPriceInWei(price);
-      if (!priceWei) return toast.error("Invalid price format");
+      if (!priceWei) return toast.error(t("courses.invalidPrice"));
 
       const tx = await signer.sendTransaction({
         to: "0xReceiverWalletAddressHere",
@@ -45,9 +46,9 @@ const Checkout = ({ courseId, price, selectedCrypto }) => {
         transactionId: data.data?.id || tx.hash,
       });
 
-      toast.success("Payment successful! You are now subscribed.");
+      toast.success(t("courses.paymentSuccess"));
     } catch (err) {
-      toast.error(err?.response?.data?.meta?.message || err.message || "Transaction failed");
+      toast.error(err?.response?.data?.meta?.message || err.message || t("courses.transactionFailed"));
     }
     setLoading(false);
   };
@@ -55,16 +56,15 @@ const Checkout = ({ courseId, price, selectedCrypto }) => {
   return (
     <div className="text-center">
       <Wallet className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-      <p className="text-base font-semibold text-white mb-1">Crypto Checkout</p>
-      <p className="text-sm text-gray-400 mb-2">Course ID: {courseId}</p>
-      <p className="text-sm text-gray-400 mb-4">Price: {price}</p>
+      <p className="text-base font-semibold text-white mb-1">{t("courses.cryptoCheckout")}</p>
+      <p className="text-sm text-gray-400 mb-2">{t("courses.courseId")} {courseId}</p>
+      <p className="text-sm text-gray-400 mb-4">{t("courses.price")} {price}</p>
       <button
         onClick={handleCryptoPayment}
         disabled={loading}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-yellow-500 text-utama font-semibold hover:bg-yellow-400 transition-all disabled:opacity-50 cursor-pointer"
       >
-        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-        {!isConnected ? "Connect Wallet" : loading ? "Processing..." : `Pay with ${selectedCrypto === "ethereum" ? "ETH" : "USDT"}`}
+        {loading ? t("courses.processing") : !isConnected ? t("courses.connectWallet") : `${t("courses.payWith")} ${selectedCrypto === "ethereum" ? t("courses.eth") : t("courses.usdtLabel")}`}
       </button>
     </div>
   );

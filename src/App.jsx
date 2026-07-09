@@ -13,6 +13,7 @@ import CreatePosting from "./components/createAnnoucement";
 import CreateSubs from "./components/subscription/CreateSubscription";
 import ClassView from "./components/subscription/SubscriptionView";
 import Checkout from "./components/subscription/Checkout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -23,9 +24,9 @@ const router = createBrowserRouter([
       { path: "players", element: <PlayerList /> },
       { path: "players/:id", element: <PlayerDetail /> },
       { path: "add-player", element: <AddPlayerForm /> },
-      { path: "posting", element: <Posting /> },
-      { path: "createposting", element: <CreatePosting /> },
-      { path: "createsubs", element: <CreateSubs /> },
+      { path: "posting", element: <ProtectedRoute requireAuth><Posting /></ProtectedRoute> },
+      { path: "createposting", element: <ProtectedRoute requireAuth roles={["admin"]}><CreatePosting /></ProtectedRoute> },
+      { path: "createsubs", element: <ProtectedRoute requireAuth roles={["admin"]}><CreateSubs /></ProtectedRoute> },
       { path: "classview", element: <ClassView /> },
       { path: "checkout/:subscriptionId", element: <Checkout /> },
     ],
